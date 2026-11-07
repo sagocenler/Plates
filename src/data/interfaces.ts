@@ -46,6 +46,7 @@ export interface ListsRepo {
 
 export interface SharesRepo {
   create(share: Share): Promise<Share>
+  update(share: Share): Promise<Share>
   get(token: string): Promise<Share | undefined>
   forTarget(targetId: Id): Promise<Share[]>
   revoke(token: string): Promise<void>

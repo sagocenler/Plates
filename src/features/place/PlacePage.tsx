@@ -4,6 +4,7 @@ import { usePlaces, useVisits } from '@/data/queries'
 import { bestDishes } from '@/domain/dishes'
 import { mapsUrl } from '@/domain/share'
 import { VALUE_LABEL, type Visit } from '@/domain/types'
+import SharePanel from '@/features/share/SharePanel'
 import AddToList from '@/features/lists/AddToList'
 import PhotoThumb from '@/features/log/PhotoThumb'
 
@@ -112,6 +113,7 @@ export default function PlacePage() {
           <a href={mapsUrl(place)} target="_blank" rel="noreferrer" className="rounded-xl border border-line px-4 py-2.5 text-sm">
             Open in Maps
           </a>
+          <SharePanel kind="place" targetId={place.id} title={place.name} />
         </div>
       </header>
 

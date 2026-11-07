@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { DataProvider } from '@/data/provider'
 import LoginPage from '@/features/auth/LoginPage'
 import { useAuth } from '@/features/auth/useAuth'
+import SharePage from '@/features/share/SharePage'
 import ListDetailPage from '@/features/lists/ListDetailPage'
 import ListsPage from '@/features/lists/ListsPage'
 import MapPage from '@/features/map/MapPage'
@@ -34,7 +35,11 @@ export default function App() {
   return (
     <DataProvider>
       <BrowserRouter>
-        <Gate />
+        <Routes>
+          {/* Public: viewable without an account */}
+          <Route path="/s/:token" element={<SharePage />} />
+          <Route path="*" element={<Gate />} />
+        </Routes>
       </BrowserRouter>
     </DataProvider>
   )

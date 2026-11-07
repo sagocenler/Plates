@@ -44,7 +44,9 @@ export function buildSharedPlace(
   if (!rep) return null
   const orderThe = new Set<string>()
   if (rep.orderThe.trim()) orderThe.add(rep.orderThe.trim())
-  for (const v of visits) for (const d of v.dishes) if (d.orderAgain) orderThe.add(d.name)
+  // Add order-again dishes unless the free-text "order the" already mentions them.
+  const said = rep.orderThe.toLowerCase()
+  for (const v of visits) for (const d of v.dishes) if (d.orderAgain && !said.includes(d.name.toLowerCase())) orderThe.add(d.name)
   const bestFor = [...new Set(visits.flatMap((v) => v.occasions))]
   return {
     name: place.name,

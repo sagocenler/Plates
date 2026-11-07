@@ -76,6 +76,10 @@ export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
         await db.shares.put(s)
         return s
       },
+      async update(s) {
+        await db.shares.put(s)
+        return s
+      },
       get: (token) => db.shares.get(token),
       forTarget: (targetId) => db.shares.where('targetId').equals(targetId).toArray(),
       async revoke(token) {

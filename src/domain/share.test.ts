@@ -12,6 +12,11 @@ describe('buildSharedPayload', () => {
     expect(payload?.places[0]?.orderThe).toContain('Cacio e pepe')
     expect(payload?.places[0]?.orderThe).toContain('Svizzera')
   })
+  it('does not repeat dishes already named in the free-text order line', () => {
+    const v = visit({ orderThe: 'Cacio e pepe, svizzera' })
+    const p = buildSharedPayload(share, { places: [place()], visits: [v] })
+    expect(p?.places[0]?.orderThe).toEqual(['Cacio e pepe, svizzera'])
+  })
   it('returns null when revoked', () => {
     expect(buildSharedPayload({ ...share, revokedAt: '2026-05-01' }, { places: [place()], visits: [visit()] })).toBeNull()
   })

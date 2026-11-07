@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import VerdictBadge from '@/components/VerdictBadge'
 import { usePlaces, useVisits } from '@/data/queries'
 import { representativeVisit } from '@/domain/share'
+import SharePanel from '@/features/share/SharePanel'
 import { useListActions } from './useListActions'
 
 const PRICE = (n: number | null) => (n ? '$'.repeat(n) : '')
@@ -77,6 +78,12 @@ export default function ListDetailPage() {
           </div>
         )}
       </header>
+
+      {items.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          <SharePanel kind="list" targetId={list.id} title={list.name} />
+        </div>
+      )}
 
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-line p-6 text-center text-muted">
