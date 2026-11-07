@@ -1,0 +1,58 @@
+import type { PlaceSearchResult } from '../interfaces'
+
+type Row = [name: string, address: string, hood: string, cuisine: string, price: 1 | 2 | 3 | 4, lat: number, lng: number]
+
+// Approximate coordinates; good enough for a dev map.
+const ROWS: Row[] = [
+  ['Via Carota', '51 Grove St', 'West Village', 'Italian', 3, 40.7316, -74.0037],
+  ['Lilia', '567 Union Ave, Brooklyn', 'Williamsburg', 'Italian', 3, 40.7176, -73.9519],
+  ['Carbone', '181 Thompson St', 'Greenwich Village', 'Italian', 4, 40.7279, -74.0003],
+  ['Joe\'s Pizza', '7 Carmine St', 'West Village', 'Pizza', 1, 40.7305, -74.0021],
+  ['Di Fara Pizza', '1424 Avenue J, Brooklyn', 'Midwood', 'Pizza', 1, 40.6251, -73.9615],
+  ['Una Pizza Napoletana', '175 Orchard St', 'Lower East Side', 'Pizza', 2, 40.7208, -73.9885],
+  ['Katz\'s Delicatessen', '205 E Houston St', 'Lower East Side', 'Deli', 2, 40.7223, -73.9874],
+  ['Russ & Daughters Cafe', '127 Orchard St', 'Lower East Side', 'Jewish deli', 2, 40.7222, -73.9899],
+  ['Le Bernardin', '155 W 51st St', 'Midtown', 'French', 4, 40.7614, -73.9819],
+  ['Balthazar', '80 Spring St', 'SoHo', 'French', 3, 40.7227, -73.9981],
+  ['Frenchette', '241 W Broadway', 'Tribeca', 'French', 3, 40.7195, -74.0053],
+  ['Don Angie', '103 Greenwich Ave', 'West Village', 'Italian-American', 3, 40.7386, -74.0030],
+  ['Estela', '47 E Houston St', 'Nolita', 'Mediterranean', 3, 40.7246, -73.9936],
+  ['Cosme', '35 E 21st St', 'Flatiron', 'Mexican', 3, 40.7387, -73.9886],
+  ['Los Tacos No. 1', '75 9th Ave', 'Chelsea', 'Mexican', 1, 40.7424, -74.0059],
+  ['Superiority Burger', '119 Avenue A', 'East Village', 'Vegetarian', 1, 40.7274, -73.9840],
+  ['Peter Luger Steak House', '178 Broadway, Brooklyn', 'Williamsburg', 'Steakhouse', 4, 40.7098, -73.9624],
+  ['Sushi Nakazawa', '23 Commerce St', 'West Village', 'Japanese', 4, 40.7326, -74.0050],
+  ['Ippudo NY', '65 4th Ave', 'East Village', 'Ramen', 2, 40.7313, -73.9906],
+  ['Momofuku Noodle Bar', '171 1st Ave', 'East Village', 'Noodles', 2, 40.7292, -73.9845],
+  ['Jungsik', '2 Harrison St', 'Tribeca', 'Korean', 4, 40.7198, -74.0092],
+  ['Atoboy', '43 E 28th St', 'NoMad', 'Korean', 3, 40.7436, -73.9855],
+  ['Xi\'an Famous Foods', '24 W 45th St', 'Midtown', 'Chinese', 1, 40.7547, -73.9815],
+  ['Nom Wah Tea Parlor', '13 Doyers St', 'Chinatown', 'Dim sum', 2, 40.7144, -73.9980],
+  ['Jean-Georges', '1 Central Park W', 'Upper West Side', 'French', 4, 40.7690, -73.9817],
+  ['Barney Greengrass', '541 Amsterdam Ave', 'Upper West Side', 'Jewish deli', 2, 40.7857, -73.9752],
+  ['Absolute Bagels', '2790 Broadway', 'Morningside Heights', 'Bagels', 1, 40.8016, -73.9660],
+  ['Gramercy Tavern', '42 E 20th St', 'Flatiron', 'American', 4, 40.7385, -73.9885],
+  ['The Odeon', '145 W Broadway', 'Tribeca', 'American brasserie', 3, 40.7167, -74.0094],
+  ['Rubirosa', '235 Mulberry St', 'Nolita', 'Italian-American', 2, 40.7227, -73.9961],
+  ['Dhamaka', '119 Delancey St', 'Lower East Side', 'Indian', 3, 40.7186, -73.9886],
+  ['Superiority Donuts', '30 Bond St', 'NoHo', 'Bakery', 1, 40.7266, -73.9926],
+  ['Roberta\'s', '261 Moore St, Brooklyn', 'Bushwick', 'Pizza', 2, 40.7054, -73.9335],
+  ['Smorgasburg Williamsburg', 'Kent Ave & N 7th St, Brooklyn', 'Williamsburg', 'Food market', 1, 40.7208, -73.9627],
+  ['Eleven Madison Park', '11 Madison Ave', 'Flatiron', 'Plant-based fine dining', 4, 40.7416, -73.9872],
+  ['Taim', '222 Waverly Pl', 'West Village', 'Middle Eastern', 1, 40.7356, -74.0045],
+  ['Mamoun\'s Falafel', '119 MacDougal St', 'Greenwich Village', 'Middle Eastern', 1, 40.7305, -74.0007],
+  ['Prune', '54 E 1st St', 'East Village', 'American', 2, 40.7240, -73.9890],
+  ['Via Quadronno', '25 E 73rd St', 'Upper East Side', 'Italian cafe', 2, 40.7728, -73.9644],
+  ['Sylvia\'s Restaurant', '328 Malcolm X Blvd', 'Harlem', 'Soul food', 2, 40.8027, -73.9449],
+]
+
+export const NYC_CATALOG: PlaceSearchResult[] = ROWS.map(([name, address, neighborhood, cuisine, price, lat, lng]) => ({
+  googlePlaceId: `mock-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+  name,
+  address: `${address}, New York, NY`.replace(', Brooklyn, New York, NY', ', Brooklyn, NY'),
+  neighborhood,
+  cuisine,
+  priceLevel: price,
+  lat,
+  lng,
+}))
