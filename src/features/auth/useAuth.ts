@@ -9,10 +9,15 @@ export function useAuth() {
   const user = useQuery({ queryKey: ['user'], queryFn: () => auth.getUser() })
   const signIn = useMutation({
     mutationFn: (email: string) => auth.signIn(email),
-    onSuccess: async (u) => {
-      // Dev convenience: a fresh local store gets ~30 NYC entries so the app looks alive.
-      if (import.meta.env.DEV) await seedIfEmpty(repos)
+    onSuccess: (u) => {
       qc.setQueryData(['user'], u)
+      // Dev convenience: a fresh local store gets ~30 NYC entries so the app looks alive.
+      // Not awaited, so sign-in stays instant; lists refresh when seeding finishes.
+      if (import.meta.env.DEV) {
+        void seedIfEmpty(repos).then((n) =>
+          n > 0 ? Promise.all([qc.invalidateQueries({ queryKey: ['visits'] }), qc.invalidateQueries({ queryKey: ['places'] })]) : undefined,
+        )
+      }
     },
   })
   const signOut = useMutation({
