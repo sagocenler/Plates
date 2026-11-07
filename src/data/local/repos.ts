@@ -86,6 +86,15 @@ export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
         await db.shares.update(token, { revokedAt: new Date().toISOString() })
       },
     },
+    drafts: {
+      async get(key) {
+        return (await db.drafts.get(key))?.data
+      },
+      async put(key, data) {
+        await db.drafts.put({ key, data, updatedAt: new Date().toISOString() })
+      },
+      remove: (key) => db.drafts.delete(key),
+    },
     photos: {
       async put(blob) {
         const id = newId()

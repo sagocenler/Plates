@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { useRepos } from '@/data/provider'
 import { usePlaces, useVisits } from '@/data/queries'
@@ -7,7 +7,7 @@ import { dishSuggestions } from '@/domain/dishes'
 import { SYSTEM_OCCASIONS, VALUES, VALUE_LABEL, type Place } from '@/domain/types'
 import { useAuth } from '@/features/auth/useAuth'
 import DishList from './DishList'
-import { canSave, emptyForm, formToVisit, toggleOccasion, type LogForm } from './formState'
+import { canSave, emptyForm, formToVisit, hasDraftContent, LOG_DRAFT_KEY, parseDraft, toggleOccasion, type LogForm } from './formState'
 import PhotoAdder from './PhotoAdder'
 import PhotoThumb from './PhotoThumb'
 import PlacePicker from './PlacePicker'
@@ -33,6 +33,53 @@ export default function LogPage() {
   const visits = useVisits()
   const patch = (p: Partial<LogForm>) => setForm((f) => ({ ...f, ...p }))
 
+  // Draft autosave: lives on this device, so a dropped connection or closed tab loses nothing.
+  const [draftReady, setDraftReady] = useState(Boolean(preset))
+  const [restored, setRestored] = useState(false)
+  const latest = useRef(form)
+  useEffect(() => {
+    latest.current = form
+  })
+  useEffect(() => {
+    if (preset) return
+    let alive = true
+    void repos.drafts.get(LOG_DRAFT_KEY).then((raw) => {
+      const draft = parseDraft(raw)
+      if (alive && draft) {
+        setForm(draft)
+        setRestored(true)
+      }
+      if (alive) setDraftReady(true)
+    })
+    return () => {
+      alive = false
+    }
+  }, [preset, repos.drafts])
+
+  useEffect(() => {
+    if (!draftReady) return
+    const persist = () => {
+      const f = latest.current
+      void (hasDraftContent(f) ? repos.drafts.put(LOG_DRAFT_KEY, f) : repos.drafts.remove(LOG_DRAFT_KEY))
+    }
+    const t = setTimeout(persist, 400)
+    const onHide = () => document.visibilityState === 'hidden' && persist()
+    document.addEventListener('visibilitychange', onHide)
+    window.addEventListener('pagehide', persist)
+    return () => {
+      clearTimeout(t)
+      document.removeEventListener('visibilitychange', onHide)
+      window.removeEventListener('pagehide', persist)
+    }
+  }, [form, draftReady, repos.drafts])
+
+  const discardDraft = async () => {
+    for (const id of [...form.photoIds, ...form.dishes.flatMap((d) => (d.photoId ? [d.photoId] : []))]) await repos.photos.remove(id)
+    await repos.drafts.remove(LOG_DRAFT_KEY)
+    setForm(emptyForm())
+    setRestored(false)
+  }
+
   // A place logged before (matched by Google id) lets us suggest dishes ordered there.
   const places = usePlaces()
   const placeId = form.place ? places.data?.find((p) => p.googlePlaceId === form.place?.googlePlaceId)?.id ?? null : null
@@ -49,11 +96,13 @@ export default function LogPage() {
       return repos.visits.save(formToVisit(form, place.id, user?.id ?? 'local-user'))
     },
     onSuccess: async () => {
+      await repos.drafts.remove(LOG_DRAFT_KEY)
       await Promise.all([qc.invalidateQueries({ queryKey: ['visits'] }), qc.invalidateQueries({ queryKey: ['places'] })])
       navigate('/library')
     },
   })
 
+  if (!draftReady) return <p role="status" className="text-muted">Loading…</p>
   if (!form.place) return <PlacePicker onPick={(place) => patch({ place })} />
 
   const submit = (e: FormEvent) => {
@@ -65,6 +114,12 @@ export default function LogPage() {
 
   return (
     <form onSubmit={submit} className="space-y-7">
+      {restored && (
+        <div role="status" className="flex items-center justify-between gap-3 rounded-xl border border-line bg-card px-4 py-3 text-sm">
+          <span>Draft restored. Pick up where you left off.</span>
+          <button type="button" onClick={() => void discardDraft()} className="shrink-0 underline">Discard</button>
+        </div>
+      )}
       <header>
         <button type="button" onClick={() => patch({ place: null })} className="text-sm text-muted">← Change restaurant</button>
         <h1 className="mt-2 text-3xl font-semibold">{form.place.name}</h1>

@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router'
+import StatusBanners from '@/components/StatusBanners'
 
 const TABS = [
   { to: '/library', label: 'Library' },
@@ -10,6 +11,7 @@ const TABS = [
 export default function Layout() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col">
+      <StatusBanners />
       <main className="flex-1 px-5 pb-28 pt-8">
         <Outlet />
       </main>

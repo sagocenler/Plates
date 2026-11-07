@@ -9,5 +9,9 @@ export default defineConfig({
   reporter: 'list',
   use: { baseURL: 'http://localhost:5173', trace: 'retain-on-failure' },
   projects: [{ name: 'iphone', use: { ...devices['iPhone 14'], browserName: 'chromium' } }],
-  webServer: { command: 'npm run dev -- --port 5173', url: 'http://localhost:5173', reuseExistingServer: true },
+  webServer: [
+    { command: 'npm run dev -- --port 5173', url: 'http://localhost:5173', reuseExistingServer: true },
+    // Production build: needed to test the service worker (disabled in dev).
+    { command: 'npm run build && npm run preview -- --port 4173 --strictPort', url: 'http://localhost:4173', reuseExistingServer: true, timeout: 120_000 },
+  ],
 })

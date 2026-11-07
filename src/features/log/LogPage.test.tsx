@@ -67,3 +67,64 @@ describe('LogPage', () => {
     })
   })
 })
+
+describe('LogPage drafts', () => {
+  const mount = (repos: ReturnType<typeof createLocalRepos>) =>
+    render(
+      <DataProvider repos={repos}>
+        <MemoryRouter initialEntries={['/log']}>
+          <Routes>
+            <Route path="/log" element={<LogPage />} />
+            <Route path="/library" element={<h1>Library page</h1>} />
+          </Routes>
+        </MemoryRouter>
+      </DataProvider>,
+    )
+
+  it('autosaves a half-filled log and restores it after a reload, then clears it on save', async () => {
+    const repos = createLocalRepos(new PlatesDB(`log-draft-${n++}`))
+    const user = userEvent.setup()
+    const first = mount(repos)
+    await user.type(await screen.findByLabelText('Search restaurants'), 'taim')
+    await user.click(await screen.findByRole('button', { name: /Taim/ }))
+    await user.click(within(screen.getByRole('group', { name: 'How was it?' })).getByRole('button', { name: 'Loved it' }))
+    await user.click(screen.getByRole('button', { name: '+ Add a dish' }))
+    await user.type(screen.getByPlaceholderText('Dish name'), 'Green falafel')
+    await waitFor(async () => expect(await repos.drafts.get('log-draft')).toBeTruthy())
+    first.unmount() // simulates losing signal / closing the app
+
+    mount(repos)
+    expect(await screen.findByText(/Draft restored/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Taim' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Green falafel')).toBeInTheDocument()
+    expect(within(screen.getByRole('group', { name: 'How was it?' })).getByRole('button', { name: 'Loved it' })).toHaveAttribute('aria-pressed', 'true')
+
+    await user.click(screen.getByRole('button', { name: 'Save visit' }))
+    await screen.findByRole('heading', { name: 'Library page' })
+    expect(await repos.drafts.get('log-draft')).toBeUndefined()
+    expect(await repos.visits.list()).toHaveLength(1)
+  })
+
+  it('discarding removes the draft', async () => {
+    const repos = createLocalRepos(new PlatesDB(`log-draft-${n++}`))
+    const user = userEvent.setup()
+    mount(repos)
+    await user.type(await screen.findByLabelText('Search restaurants'), 'lilia')
+    await user.click(await screen.findByRole('button', { name: /Lilia/ }))
+    await user.click(within(screen.getByRole('group', { name: 'How was it?' })).getByRole('button', { name: 'Liked it' }))
+    await waitFor(async () => expect(await repos.drafts.get('log-draft')).toBeTruthy())
+    document.body.innerHTML = ''
+    mount(repos)
+    await user.click(await screen.findByRole('button', { name: 'Discard' }))
+    expect(await screen.findByLabelText('Search restaurants')).toBeInTheDocument()
+    await waitFor(async () => expect(await repos.drafts.get('log-draft')).toBeUndefined())
+  })
+
+  it('ignores a corrupt draft', async () => {
+    const repos = createLocalRepos(new PlatesDB(`log-draft-${n++}`))
+    await repos.drafts.put('log-draft', { place: 'nope' })
+    mount(repos)
+    expect(await screen.findByLabelText('Search restaurants')).toBeInTheDocument()
+    expect(screen.queryByText(/Draft restored/)).not.toBeInTheDocument()
+  })
+})

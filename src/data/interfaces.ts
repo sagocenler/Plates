@@ -59,7 +59,15 @@ export interface PhotosRepo {
   remove(id: Id): Promise<void>
 }
 
+/** Unsaved work (e.g. a half-filled visit). Stays on-device; never synced. */
+export interface DraftsRepo {
+  get(key: string): Promise<unknown | undefined>
+  put(key: string, data: unknown): Promise<void>
+  remove(key: string): Promise<void>
+}
+
 export interface Repos {
+  drafts: DraftsRepo
   auth: AuthRepo
   places: PlacesRepo
   placeSearch: PlacesProvider

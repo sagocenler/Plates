@@ -33,3 +33,27 @@ describe('log form state', () => {
     expect(() => formToVisit({ ...emptyForm(), place }, 'p1', 'u1')).toThrow()
   })
 })
+
+import { hasDraftContent, parseDraft } from './formState'
+
+describe('drafts', () => {
+  const place = { googlePlaceId: 'g', name: 'X', address: 'a', lat: 0, lng: 0, neighborhood: 'n', cuisine: 'c', priceLevel: 2 as const }
+  it('only keeps a draft once there is a place and something entered', () => {
+    expect(hasDraftContent(emptyForm())).toBe(false)
+    expect(hasDraftContent({ ...emptyForm(), place })).toBe(false)
+    expect(hasDraftContent({ ...emptyForm(), place, tip: '  ' })).toBe(false)
+    expect(hasDraftContent({ ...emptyForm(), place, verdict: 'liked' })).toBe(true)
+    expect(hasDraftContent({ ...emptyForm(), place, tip: 'go early' })).toBe(true)
+    expect(hasDraftContent({ ...emptyForm(), verdict: 'liked' })).toBe(false)
+  })
+  it('round-trips through JSON', () => {
+    const f = { ...emptyForm(), place, verdict: 'loved' as const, dishes: [{ key: 'k', name: 'Pasta', verdict: null, orderAgain: true, photoId: 'ph' }] }
+    expect(parseDraft(JSON.parse(JSON.stringify(f)))).toEqual(f)
+  })
+  it('rejects malformed or stale data', () => {
+    expect(parseDraft(null)).toBeNull()
+    expect(parseDraft('x')).toBeNull()
+    expect(parseDraft({ place: null })).toBeNull()
+    expect(parseDraft({ ...emptyForm(), place, dishes: [{ nope: 1 }] })).toBeNull()
+  })
+})
