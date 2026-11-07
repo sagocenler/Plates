@@ -7,7 +7,7 @@ test('installed-app behaviour: reloads and logs a visit with no connection', asy
   await page.goto('/')
   await page.getByLabel('Email').fill('victoria@example.com')
   await page.getByRole('button', { name: 'Continue' }).click()
-  await expect(page.getByRole('heading', { name: 'Your library is empty' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Welcome to Plates' })).toBeVisible()
 
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready
@@ -20,7 +20,7 @@ test('installed-app behaviour: reloads and logs a visit with no connection', asy
 
   await context.setOffline(true)
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Your library is empty' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Welcome to Plates' })).toBeVisible()
   await expect(page.getByText("You're offline")).toBeVisible()
 
   // Log a visit while offline.

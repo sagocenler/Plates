@@ -6,6 +6,7 @@ import { usePlaces, useVisits } from '@/data/queries'
 import { dishSuggestions } from '@/domain/dishes'
 import { SYSTEM_OCCASIONS, VALUES, VALUE_LABEL, type Place } from '@/domain/types'
 import { useAuth } from '@/features/auth/useAuth'
+import { PageSkeleton } from '@/components/Skeleton'
 import DishList from './DishList'
 import { canSave, emptyForm, formToVisit, hasDraftContent, LOG_DRAFT_KEY, parseDraft, toggleOccasion, type LogForm } from './formState'
 import PhotoAdder from './PhotoAdder'
@@ -102,7 +103,7 @@ export default function LogPage() {
     },
   })
 
-  if (!draftReady) return <p role="status" className="text-muted">Loading…</p>
+  if (!draftReady) return <PageSkeleton label="Loading" />
   if (!form.place) return <PlacePicker onPick={(place) => patch({ place })} />
 
   const submit = (e: FormEvent) => {

@@ -6,6 +6,8 @@ import { mapsUrl } from '@/domain/share'
 import { VALUE_LABEL, type Visit } from '@/domain/types'
 import SharePanel from '@/features/share/SharePanel'
 import AddToList from '@/features/lists/AddToList'
+import QueryError from '@/components/QueryError'
+import { PageSkeleton } from '@/components/Skeleton'
 import PhotoThumb from '@/features/log/PhotoThumb'
 
 const PRICE = (n: number | null) => (n ? '$'.repeat(n) : '')
@@ -80,7 +82,10 @@ export default function PlacePage() {
   const places = usePlaces()
   const visits = useVisits()
 
-  if (places.isLoading || visits.isLoading) return <p role="status" className="text-muted">Loading…</p>
+  if (places.isError || visits.isError) {
+    return <QueryError what="this restaurant" onRetry={() => void Promise.all([places.refetch(), visits.refetch()])} />
+  }
+  if (places.isLoading || visits.isLoading) return <PageSkeleton label="Loading restaurant" />
   const place = places.data?.find((p) => p.id === id)
   if (!place) {
     return (

@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import VerdictBadge from '@/components/VerdictBadge'
 import { VALUE_LABEL } from '@/domain/types'
 import type { SharedPlace } from '@/domain/share'
+import { PageSkeleton } from '@/components/Skeleton'
 import PhotoThumb from '@/features/log/PhotoThumb'
 import { useSharedPayload } from './useSharedPayload'
 
@@ -76,7 +77,16 @@ export default function SharePage() {
     }
   }, [payload])
 
-  if (q.isLoading) return <p role="status" className="p-6 text-muted">Loading…</p>
+  if (q.isLoading) return <main className="mx-auto max-w-xl px-5 pt-10"><PageSkeleton label="Loading recommendation" /></main>
+  if (q.isError) {
+    return (
+      <main role="alert" className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6 text-center">
+        <h1 className="text-3xl font-semibold">We couldn't open this link</h1>
+        <p className="mt-3 text-muted">Check your connection and try again.</p>
+        <button type="button" onClick={() => void q.refetch()} className="mx-auto mt-6 min-h-11 rounded-xl bg-accent px-6 font-medium text-accent-ink">Try again</button>
+      </main>
+    )
+  }
 
   if (!payload) {
     return (

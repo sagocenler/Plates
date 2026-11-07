@@ -4,10 +4,21 @@ import VerdictBadge from '@/components/VerdictBadge'
 import { usePlaces, useVisits } from '@/data/queries'
 import { buildLibrary, filterLibrary } from '@/domain/filters'
 import { representativeVisit } from '@/domain/share'
+import QueryError from '@/components/QueryError'
+import { Skeleton } from '@/components/Skeleton'
 import { filtersToParams, paramsToFilters } from '@/features/library/filterParams'
 
 const MapView = lazy(() => import('./MapView'))
 const PRICE = (n: number | null) => (n ? '$'.repeat(n) : '')
+
+function MapLoading() {
+  return (
+    <div role="status" aria-busy="true" className="h-full min-h-[60dvh] w-full p-3">
+      <span className="sr-only">Loading map…</span>
+      <Skeleton className="h-full w-full" />
+    </div>
+  )
+}
 
 export default function MapPage() {
   const [params, setParams] = useSearchParams()
@@ -25,7 +36,10 @@ export default function MapPage() {
   const toggleLoved = () =>
     setParams(filtersToParams({ ...filters, verdict: lovedAgain ? null : 'loved', orderAgain: !lovedAgain }), { replace: true })
 
-  if (places.isLoading || visits.isLoading) return <p role="status" className="text-muted">Loading map…</p>
+  if (places.isError || visits.isError) {
+    return <QueryError what="your map" onRetry={() => void Promise.all([places.refetch(), visits.refetch()])} />
+  }
+  if (places.isLoading || visits.isLoading) return <MapLoading />
 
   if (library.length === 0) {
     return (
@@ -39,7 +53,7 @@ export default function MapPage() {
 
   return (
     <section aria-label="Map" className="relative -mx-5 -mb-28 -mt-8 h-[calc(100dvh-3.5rem-env(safe-area-inset-bottom))]">
-      <Suspense fallback={<p role="status" className="p-6 text-muted">Loading map…</p>}>
+      <Suspense fallback={<MapLoading />}>
         <MapView entries={results} selectedId={selected} onSelect={setSelected} />
       </Suspense>
 

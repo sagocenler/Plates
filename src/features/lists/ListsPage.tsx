@@ -48,8 +48,8 @@ export default function ListsPage() {
                   <span className="block truncate font-serif text-lg font-semibold">{l.name}</span>
                   <span className="text-sm text-muted">{count} {count === 1 ? 'place' : 'places'}</span>
                 </Link>
-                <button type="button" aria-label={`Move ${l.name} up`} disabled={i === 0} onClick={() => void a.moveList(l.id, -1)} className="h-10 w-10 rounded-lg border border-line disabled:opacity-30">↑</button>
-                <button type="button" aria-label={`Move ${l.name} down`} disabled={i === a.lists.length - 1} onClick={() => void a.moveList(l.id, 1)} className="h-10 w-10 rounded-lg border border-line disabled:opacity-30">↓</button>
+                <button type="button" aria-label={`Move ${l.name} up`} disabled={i === 0} onClick={() => void a.moveList(l.id, -1)} className="h-11 w-11 rounded-lg border border-line disabled:opacity-30">↑</button>
+                <button type="button" aria-label={`Move ${l.name} down`} disabled={i === a.lists.length - 1} onClick={() => void a.moveList(l.id, 1)} className="h-11 w-11 rounded-lg border border-line disabled:opacity-30">↓</button>
               </li>
             )
           })}

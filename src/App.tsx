@@ -1,10 +1,13 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { DataProvider } from '@/data/provider'
+import { PageSkeleton } from '@/components/Skeleton'
 import LoginPage from '@/features/auth/LoginPage'
 import { useAuth } from '@/features/auth/useAuth'
 import SharePage from '@/features/share/SharePage'
 import ListDetailPage from '@/features/lists/ListDetailPage'
 import ListsPage from '@/features/lists/ListsPage'
+import QuickAddPage from '@/features/onboarding/QuickAddPage'
 import MapPage from '@/features/map/MapPage'
 import LibraryPage from '@/features/library/LibraryPage'
 import PlacePage from '@/features/place/PlacePage'
@@ -13,7 +16,7 @@ import Layout from '@/routes/Layout'
 
 function Gate() {
   const { user, loading } = useAuth()
-  if (loading) return <p className="p-6 text-muted" role="status">Loading…</p>
+  if (loading) return <div className="mx-auto max-w-md p-6"><PageSkeleton label="Loading" /></div>
   if (!user) return <LoginPage />
   return (
     <Routes>
@@ -23,6 +26,7 @@ function Gate() {
         <Route path="place/:id" element={<PlacePage />} />
         <Route path="map" element={<MapPage />} />
         <Route path="log" element={<LogPage />} />
+        <Route path="welcome" element={<QuickAddPage />} />
         <Route path="lists" element={<ListsPage />} />
         <Route path="lists/:id" element={<ListDetailPage />} />
         <Route path="*" element={<Navigate to="/library" replace />} />
@@ -33,6 +37,7 @@ function Gate() {
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <DataProvider>
       <BrowserRouter>
         <Routes>
@@ -42,5 +47,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </DataProvider>
+    </ErrorBoundary>
   )
 }

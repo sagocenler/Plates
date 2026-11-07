@@ -5,6 +5,8 @@ import { usePlaces, useVisits } from '@/data/queries'
 import { facetsOf } from '@/domain/facets'
 import { activeFilterCount, buildLibrary, EMPTY_FILTERS, filterLibrary, type Filters, type LibraryEntry } from '@/domain/filters'
 import { VERDICT_LABEL, VERDICTS } from '@/domain/types'
+import QueryError from '@/components/QueryError'
+import { ListSkeleton } from '@/components/Skeleton'
 import PhotoThumb from '@/features/log/PhotoThumb'
 import { filtersToParams, paramsToFilters } from './filterParams'
 
@@ -17,7 +19,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`shrink-0 rounded-full border px-3.5 py-2 text-sm ${active ? 'border-accent bg-accent text-accent-ink' : 'border-line bg-card'}`}
+      className={`min-h-11 shrink-0 rounded-full border px-4 py-2 text-sm ${active ? 'border-accent bg-accent text-accent-ink' : 'border-line bg-card'}`}
     >
       {children}
     </button>
@@ -91,14 +93,35 @@ export default function LibraryPage() {
   const lovedAgain = filters.verdict === 'loved' && filters.orderAgain
   const qs = params.toString()
 
-  if (places.isLoading || visits.isLoading) return <p role="status" className="text-muted">Loading your library…</p>
+  if (places.isError || visits.isError) {
+    return <QueryError what="your library" onRetry={() => void Promise.all([places.refetch(), visits.refetch()])} />
+  }
+  if (places.isLoading || visits.isLoading) return <ListSkeleton label="Loading your library" />
 
   if (library.length === 0) {
     return (
-      <section className="pt-10 text-center">
-        <h1 className="text-3xl font-semibold">Your library is empty</h1>
-        <p className="mx-auto mt-3 max-w-xs text-muted">Log the last place you ate, or add a few past favorites. It takes under a minute each.</p>
-        <Link to="/log" className="mt-6 inline-block rounded-xl bg-accent px-6 py-3 font-medium text-accent-ink">Log your first place</Link>
+      <section className="pt-6">
+        <h1 className="text-4xl font-semibold">Welcome to Plates</h1>
+        <p className="mt-3 text-muted">Be the friend who always knows where to eat.</p>
+        <ol className="mt-8 space-y-5">
+          {[
+            ['Log', 'Jot down a visit in under a minute: a verdict, a photo, what to order.'],
+            ['Collect', 'Build lists like "Best date night" from everywhere you\'ve been.'],
+            ['Share', 'Send a beautiful link. No app or account needed to open it.'],
+          ].map(([title, body], i) => (
+            <li key={title} className="flex gap-4">
+              <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent font-serif text-accent-ink">{i + 1}</span>
+              <div>
+                <h2 className="font-serif text-lg font-semibold">{title}</h2>
+                <p className="text-muted">{body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-10 flex flex-col gap-3">
+          <Link to="/log" className="min-h-12 rounded-xl bg-accent px-6 py-3.5 text-center font-medium text-accent-ink">Log your first place</Link>
+          <Link to="/welcome" className="min-h-12 rounded-xl border border-line px-6 py-3.5 text-center font-medium">Add a few past favorites</Link>
+        </div>
       </section>
     )
   }
@@ -126,7 +149,7 @@ export default function LibraryPage() {
             Filters{count > 0 ? ` (${count})` : ''}
           </Chip>
           {count > 0 && (
-            <button type="button" onClick={() => set({ ...EMPTY_FILTERS, query: filters.query })} className="shrink-0 px-2 text-sm text-muted underline">
+            <button type="button" onClick={() => set({ ...EMPTY_FILTERS, query: filters.query })} className="min-h-11 shrink-0 px-2 text-sm text-muted underline">
               Clear
             </button>
           )}

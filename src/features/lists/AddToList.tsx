@@ -6,6 +6,16 @@ export default function AddToList({ placeId }: { placeId: string }) {
   const a = useListActions()
   const [name, setName] = useState('')
   const memberOf = new Set(a.items.filter((i) => i.placeId === placeId).map((i) => i.listId))
+  // Show the tick instantly; the stored value catches up a moment later.
+  const [optimistic, setOptimistic] = useState<Record<string, boolean>>({})
+  const toggle = async (listId: string, on: boolean) => {
+    setOptimistic((o) => ({ ...o, [listId]: on }))
+    try {
+      await (on ? a.addPlace(listId, placeId) : a.removePlace(listId, placeId))
+    } finally {
+      setOptimistic(({ [listId]: _done, ...rest }) => rest)
+    }
+  }
 
   return (
     <details className="rounded-xl border border-line bg-card p-4">
@@ -18,8 +28,8 @@ export default function AddToList({ placeId }: { placeId: string }) {
             <label className="flex items-center gap-3 py-2">
               <input
                 type="checkbox"
-                checked={memberOf.has(l.id)}
-                onChange={(e) => void (e.target.checked ? a.addPlace(l.id, placeId) : a.removePlace(l.id, placeId))}
+                checked={optimistic[l.id] ?? memberOf.has(l.id)}
+                onChange={(e) => void toggle(l.id, e.target.checked)}
                 className="h-5 w-5 accent-[var(--color-accent)]"
               />
               {l.name}

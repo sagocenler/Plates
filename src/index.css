@@ -38,3 +38,19 @@ body {
 }
 h1, h2, h3 { font-family: var(--font-serif); letter-spacing: -0.01em; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Soften the bright map tiles in dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .maplibregl-canvas { filter: brightness(0.78) contrast(1.05); }
+  :root:not(.light) .maplibregl-ctrl-attrib { background: rgba(20, 17, 15, 0.8); color: #c9c0b4; }
+  :root:not(.light) .maplibregl-ctrl-attrib a { color: #e07a5f; }
+}

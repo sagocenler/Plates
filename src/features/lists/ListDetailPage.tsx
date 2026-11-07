@@ -115,10 +115,10 @@ export default function ListDetailPage() {
                 />
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex gap-2">
-                    <button type="button" aria-label={`Move ${place.name} up`} disabled={i === 0} onClick={() => void a.moveItem(list.id, item.id, -1)} className="h-9 w-9 rounded-lg border border-line disabled:opacity-30">↑</button>
-                    <button type="button" aria-label={`Move ${place.name} down`} disabled={i === items.length - 1} onClick={() => void a.moveItem(list.id, item.id, 1)} className="h-9 w-9 rounded-lg border border-line disabled:opacity-30">↓</button>
+                    <button type="button" aria-label={`Move ${place.name} up`} disabled={i === 0} onClick={() => void a.moveItem(list.id, item.id, -1)} className="h-11 w-11 rounded-lg border border-line disabled:opacity-30">↑</button>
+                    <button type="button" aria-label={`Move ${place.name} down`} disabled={i === items.length - 1} onClick={() => void a.moveItem(list.id, item.id, 1)} className="h-11 w-11 rounded-lg border border-line disabled:opacity-30">↓</button>
                   </div>
-                  <button type="button" onClick={() => void a.removePlace(list.id, place.id)} aria-label={`Remove ${place.name} from list`} className="text-sm text-muted">Remove</button>
+                  <button type="button" onClick={() => void a.removePlace(list.id, place.id)} aria-label={`Remove ${place.name} from list`} className="min-h-11 px-2 text-sm text-muted">Remove</button>
                 </div>
               </li>
             )

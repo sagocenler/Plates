@@ -28,10 +28,11 @@ async function setup(opts: { seed: boolean; path?: string }) {
 }
 
 describe('LibraryPage', () => {
-  it('guides first-time users with an empty state', async () => {
+  it('welcomes first-time users and points them to log or quick-add', async () => {
     await setup({ seed: false })
-    expect(await screen.findByRole('heading', { name: 'Your library is empty' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Welcome to Plates' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Log your first place' })).toHaveAttribute('href', '/log')
+    expect(screen.getByRole('link', { name: 'Add a few past favorites' })).toHaveAttribute('href', '/welcome')
   })
 
   it('lists every logged place, newest first', async () => {
