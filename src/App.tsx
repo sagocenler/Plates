@@ -2,12 +2,13 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { DataProvider } from '@/data/provider'
 import LoginPage from '@/features/auth/LoginPage'
 import { useAuth } from '@/features/auth/useAuth'
+import ListDetailPage from '@/features/lists/ListDetailPage'
+import ListsPage from '@/features/lists/ListsPage'
 import MapPage from '@/features/map/MapPage'
 import LibraryPage from '@/features/library/LibraryPage'
 import PlacePage from '@/features/place/PlacePage'
 import LogPage from '@/features/log/LogPage'
 import Layout from '@/routes/Layout'
-import Placeholder from '@/routes/Placeholder'
 
 function Gate() {
   const { user, loading } = useAuth()
@@ -21,7 +22,8 @@ function Gate() {
         <Route path="place/:id" element={<PlacePage />} />
         <Route path="map" element={<MapPage />} />
         <Route path="log" element={<LogPage />} />
-        <Route path="lists" element={<Placeholder title="Lists" step={5} />} />
+        <Route path="lists" element={<ListsPage />} />
+        <Route path="lists/:id" element={<ListDetailPage />} />
         <Route path="*" element={<Navigate to="/library" replace />} />
       </Route>
     </Routes>

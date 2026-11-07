@@ -4,6 +4,7 @@ import { usePlaces, useVisits } from '@/data/queries'
 import { bestDishes } from '@/domain/dishes'
 import { mapsUrl } from '@/domain/share'
 import { VALUE_LABEL, type Visit } from '@/domain/types'
+import AddToList from '@/features/lists/AddToList'
 import PhotoThumb from '@/features/log/PhotoThumb'
 
 const PRICE = (n: number | null) => (n ? '$'.repeat(n) : '')
@@ -113,6 +114,8 @@ export default function PlacePage() {
           </a>
         </div>
       </header>
+
+      <AddToList placeId={place.id} />
 
       {best.length > 0 && (
         <section aria-labelledby="best-h">
