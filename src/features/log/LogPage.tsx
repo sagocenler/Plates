@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import { useRepos } from '@/data/provider'
 import { usePlaces, useVisits } from '@/data/queries'
 import { dishSuggestions } from '@/domain/dishes'
-import { SYSTEM_OCCASIONS, VALUES, VALUE_LABEL } from '@/domain/types'
+import { SYSTEM_OCCASIONS, VALUES, VALUE_LABEL, type Place } from '@/domain/types'
 import { useAuth } from '@/features/auth/useAuth'
 import DishList from './DishList'
 import { canSave, emptyForm, formToVisit, toggleOccasion, type LogForm } from './formState'
@@ -16,7 +16,15 @@ import VerdictPicker from './VerdictPicker'
 const field = 'w-full rounded-xl border border-line bg-card px-4 py-3 text-base'
 
 export default function LogPage() {
-  const [form, setForm] = useState<LogForm>(() => emptyForm())
+  const location = useLocation()
+  // "Log another visit" from a restaurant page arrives with the place preselected.
+  const preset = (location.state as { place?: Place } | null)?.place
+  const [form, setForm] = useState<LogForm>(() => {
+    const f = emptyForm()
+    if (!preset) return f
+    const { id: _id, snapshotAt: _s, ...snapshot } = preset
+    return { ...f, place: snapshot }
+  })
   const [customTag, setCustomTag] = useState('')
   const repos = useRepos()
   const { user } = useAuth()

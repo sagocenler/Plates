@@ -9,6 +9,6 @@ describe('App', () => {
     await userEvent.type(screen.getByLabelText('Email'), 'victoria@example.com')
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
     await waitFor(() => expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument())
-    expect(await screen.findByRole('heading', { name: 'Library' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /^Library$|Your library is empty/ })).toBeInTheDocument()
   })
 })

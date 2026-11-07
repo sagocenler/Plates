@@ -20,3 +20,18 @@ describe('dishSuggestions', () => {
     expect(dishSuggestions(visits, 'zzz')).toEqual([])
   })
 })
+
+import { bestDishes } from './dishes'
+
+describe('bestDishes', () => {
+  const dd = (name: string, verdict: 'loved' | 'fine' | null, orderAgain: boolean) => ({ id: name + verdict, name, verdict, orderAgain, photoId: null })
+  it('keeps loved / order-again dishes, merges repeats, ranks order-again first', () => {
+    const vs = [
+      visit({ id: 'a', dishes: [dd('Pasta', 'loved', false), dd('Soup', 'fine', false), dd('Steak', 'loved', true)] }),
+      visit({ id: 'b', dishes: [dd('pasta', 'loved', false)] }),
+    ]
+    const r = bestDishes(vs)
+    expect(r.map((d) => d.name)).toEqual(['Steak', 'Pasta'])
+    expect(r[1]?.times).toBe(2)
+  })
+})
