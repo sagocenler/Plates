@@ -1,3 +1,4 @@
+import { buildSharedPayload } from '@/domain/share'
 import type { Id } from '@/domain/types'
 import type { Repos } from '../interfaces'
 import { MockPlacesProvider } from '../mockPlaces'
@@ -8,6 +9,7 @@ export const newId = (): Id => crypto.randomUUID()
 export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
   return {
     auth: {
+      mode: 'local',
       async getUser() {
         return (await db.session.get('user'))?.profile ?? null
       },
@@ -15,6 +17,9 @@ export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
         const profile = { id: 'local-user', displayName: email.split('@')[0] || 'You' }
         await db.session.put({ key: 'user', profile })
         return profile
+      },
+      async signUp(email) {
+        return this.signIn(email, '')
       },
       async signOut() {
         await db.session.delete('user')
@@ -69,6 +74,15 @@ export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
         await db.transaction('rw', db.listItems, async () => {
           for (const [i, id] of ids.entries()) await db.listItems.update(id, { position: i })
         })
+      },
+    },
+    shared: {
+      async getShared(token) {
+        const share = await db.shares.get(token)
+        if (!share || share.revokedAt) return null
+        const [places, visits, lists, items] = await Promise.all([db.places.toArray(), db.visits.toArray(), db.lists.toArray(), db.listItems.toArray()])
+        const list = share.kind === 'list' ? lists.find((l) => l.id === share.targetId) : undefined
+        return buildSharedPayload(share, { places, visits, ...(list ? { list } : {}), items: items.filter((i) => i.listId === share.targetId) })
       },
     },
     shares: {

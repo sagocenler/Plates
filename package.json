@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:supabase": "vite --mode supabase --port 5175",
+    "build:supabase": "tsc -b && vite build --mode supabase",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",

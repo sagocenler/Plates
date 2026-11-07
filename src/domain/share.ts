@@ -23,8 +23,10 @@ export interface SharedPayload {
   places: SharedPlace[]
 }
 
-export const mapsUrl = (p: Place) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name} ${p.address}`)}&query_place_id=${encodeURIComponent(p.googlePlaceId)}`
+export const mapsUrlFor = (name: string, address: string, googlePlaceId: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}&query_place_id=${encodeURIComponent(googlePlaceId)}`
+
+export const mapsUrl = (p: Place) => mapsUrlFor(p.name, p.address, p.googlePlaceId)
 
 const RANK: Record<Verdict, number> = { loved: 0, liked: 1, fine: 2, skip: 3 }
 

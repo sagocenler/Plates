@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { useWants } from '@/data/queries'
+import AccountFooter from '@/features/auth/AccountFooter'
 import { useListActions } from './useListActions'
 
 export default function ListsPage() {
@@ -65,6 +66,7 @@ export default function ListsPage() {
           })}
         </ul>
       )}
+      <AccountFooter />
     </section>
   )
 }

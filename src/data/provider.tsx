@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import type { Repos } from './interfaces'
-import { createLocalRepos } from './local/repos'
+import { createRepos } from './createRepos'
 
 const ReposContext = createContext<Repos | null>(null)
 
 export function DataProvider({ repos, children }: { repos?: Repos; children: ReactNode }) {
-  const value = useMemo(() => repos ?? createLocalRepos(), [repos])
+  const value = useMemo(() => repos ?? createRepos(), [repos])
   const client = useMemo(() => new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } }), [])
   return (
     <ReposContext.Provider value={value}>

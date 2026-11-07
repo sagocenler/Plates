@@ -4,8 +4,23 @@
     {
       "name": "plates-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "5174"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5174"
+      ],
       "port": 5174
+    },
+    {
+      "name": "plates-supabase",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev:supabase"
+      ],
+      "port": 5175
     }
   ]
 }

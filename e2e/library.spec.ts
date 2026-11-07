@@ -8,6 +8,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('Loved it + order again is one tap, and Back keeps the filter', async ({ page }) => {
+  await expect(page.getByText('31 places')).toBeVisible() // dev seed finished
   const all = await page.getByRole('heading', { level: 2 }).count()
   await page.getByRole('button', { name: 'Loved it + order again' }).click()
   await expect(page.getByRole('button', { name: 'Loved it + order again' })).toHaveAttribute('aria-pressed', 'true')

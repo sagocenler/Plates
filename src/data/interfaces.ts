@@ -1,11 +1,21 @@
+import type { SharedPayload } from '@/domain/share'
 import type { Id, List, ListItem, Place, Profile, Share, Visit, WantItem } from '@/domain/types'
 
 /** The UI depends only on these interfaces. Local (Dexie) now, Supabase later. */
 
 export interface AuthRepo {
+  /** 'local' = dev stub (any email); 'password' = real email + password accounts. */
+  readonly mode: 'local' | 'password'
   getUser(): Promise<Profile | null>
-  signIn(email: string): Promise<Profile>
+  signIn(email: string, password: string): Promise<Profile>
+  /** Resolves null when the backend requires email confirmation before a session exists. */
+  signUp(email: string, password: string): Promise<Profile | null>
   signOut(): Promise<void>
+}
+
+/** What a share link resolves to: the recipient-safe payload, or null when unknown/revoked. */
+export interface SharedRepo {
+  getShared(token: string): Promise<SharedPayload | null>
 }
 
 export interface PlacesRepo {
@@ -83,5 +93,6 @@ export interface Repos {
   visits: VisitsRepo
   lists: ListsRepo
   shares: SharesRepo
+  shared: SharedRepo
   photos: PhotosRepo
 }

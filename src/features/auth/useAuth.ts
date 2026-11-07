@@ -8,21 +8,31 @@ export function useAuth() {
   const qc = useQueryClient()
   const user = useQuery({ queryKey: ['user'], queryFn: () => auth.getUser() })
   const signIn = useMutation({
-    mutationFn: (email: string) => auth.signIn(email),
+    mutationFn: ({ email, password }: { email: string; password: string }) => auth.signIn(email, password),
     onSuccess: (u) => {
       qc.setQueryData(['user'], u)
       // Dev convenience: a fresh local store gets ~30 NYC entries so the app looks alive.
       // Not awaited, so sign-in stays instant; lists refresh when seeding finishes.
-      if (import.meta.env.DEV) {
+      if (import.meta.env.DEV && auth.mode === 'local') {
         void seedIfEmpty(repos).then((n) =>
           n > 0 ? Promise.all([qc.invalidateQueries({ queryKey: ['visits'] }), qc.invalidateQueries({ queryKey: ['places'] })]) : undefined,
         )
       }
     },
   })
+  const signUp = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) => auth.signUp(email, password),
+    onSuccess: (u) => {
+      qc.setQueryData(['user'], u)
+      if (u && import.meta.env.DEV && auth.mode === 'local') void seedIfEmpty(repos)
+    },
+  })
   const signOut = useMutation({
     mutationFn: () => auth.signOut(),
-    onSuccess: () => qc.setQueryData(['user'], null),
+    onSuccess: () => {
+      qc.clear() // never leave one account's data in memory for the next
+      qc.setQueryData(['user'], null)
+    },
   })
-  return { user: user.data ?? null, loading: user.isLoading, signIn, signOut }
+  return { user: user.data ?? null, loading: user.isLoading, mode: auth.mode, signIn, signUp, signOut }
 }
