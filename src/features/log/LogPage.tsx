@@ -186,7 +186,7 @@ export default function LogPage() {
         <button
           type="submit"
           disabled={!canSave(form) || save.isPending}
-          className="w-full rounded-xl bg-accent px-4 py-4 text-base font-medium text-accent-ink shadow-lg disabled:opacity-40"
+          className="w-full rounded-xl bg-accent px-4 py-4 text-base font-medium text-accent-ink shadow-lg disabled:bg-line disabled:text-muted disabled:shadow-none"
         >
           {save.isPending ? 'Saving…' : form.verdict ? 'Save visit' : 'Pick a verdict to save'}
         </button>

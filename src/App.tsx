@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { DataProvider } from '@/data/provider'
 import LoginPage from '@/features/auth/LoginPage'
 import { useAuth } from '@/features/auth/useAuth'
+import MapPage from '@/features/map/MapPage'
 import LibraryPage from '@/features/library/LibraryPage'
 import PlacePage from '@/features/place/PlacePage'
 import LogPage from '@/features/log/LogPage'
@@ -18,7 +19,7 @@ function Gate() {
         <Route index element={<Navigate to="/library" replace />} />
         <Route path="library" element={<LibraryPage />} />
         <Route path="place/:id" element={<PlacePage />} />
-        <Route path="map" element={<Placeholder title="Map" step={4} />} />
+        <Route path="map" element={<MapPage />} />
         <Route path="log" element={<LogPage />} />
         <Route path="lists" element={<Placeholder title="Lists" step={5} />} />
         <Route path="*" element={<Navigate to="/library" replace />} />
