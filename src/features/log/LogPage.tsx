@@ -19,7 +19,9 @@ const field = 'w-full rounded-xl border border-line bg-card px-4 py-3 text-base'
 export default function LogPage() {
   const location = useLocation()
   // "Log another visit" from a restaurant page arrives with the place preselected.
-  const preset = (location.state as { place?: Place } | null)?.place
+  const navState = location.state as { place?: Place; wantId?: string } | null
+  const preset = navState?.place
+  const wantId = navState?.wantId
   const [form, setForm] = useState<LogForm>(() => {
     const f = emptyForm()
     if (!preset) return f
@@ -98,7 +100,8 @@ export default function LogPage() {
     },
     onSuccess: async () => {
       await repos.drafts.remove(LOG_DRAFT_KEY)
-      await Promise.all([qc.invalidateQueries({ queryKey: ['visits'] }), qc.invalidateQueries({ queryKey: ['places'] })])
+      if (wantId) await repos.wants.remove(wantId) // "I went": it graduates from want-to-try
+      await Promise.all([qc.invalidateQueries({ queryKey: ['wants'] }), qc.invalidateQueries({ queryKey: ['visits'] }), qc.invalidateQueries({ queryKey: ['places'] })])
       navigate('/library')
     },
   })

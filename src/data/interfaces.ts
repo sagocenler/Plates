@@ -1,4 +1,4 @@
-import type { Id, List, ListItem, Place, Profile, Share, Visit } from '@/domain/types'
+import type { Id, List, ListItem, Place, Profile, Share, Visit, WantItem } from '@/domain/types'
 
 /** The UI depends only on these interfaces. Local (Dexie) now, Supabase later. */
 
@@ -59,6 +59,14 @@ export interface PhotosRepo {
   remove(id: Id): Promise<void>
 }
 
+export interface WantRepo {
+  list(): Promise<WantItem[]>
+  /** Idempotent per place: adding a place that is already wanted returns the existing item. */
+  add(item: WantItem): Promise<WantItem>
+  update(item: WantItem): Promise<WantItem>
+  remove(id: Id): Promise<void>
+}
+
 /** Unsaved work (e.g. a half-filled visit). Stays on-device; never synced. */
 export interface DraftsRepo {
   get(key: string): Promise<unknown | undefined>
@@ -68,6 +76,7 @@ export interface DraftsRepo {
 
 export interface Repos {
   drafts: DraftsRepo
+  wants: WantRepo
   auth: AuthRepo
   places: PlacesRepo
   placeSearch: PlacesProvider

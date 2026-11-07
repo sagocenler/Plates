@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
+import { useWants } from '@/data/queries'
 import { useListActions } from './useListActions'
 
 export default function ListsPage() {
   const a = useListActions()
+  const wantCount = useWants().data?.length ?? 0
   const [name, setName] = useState('')
 
   const create = async (e: FormEvent) => {
@@ -32,6 +34,14 @@ export default function ListsPage() {
           Create
         </button>
       </form>
+
+      <Link to="/want" className="mt-5 flex min-h-14 items-center justify-between rounded-xl border border-line bg-card px-4 py-3 active:opacity-60">
+        <span>
+          <span className="block font-serif text-lg font-semibold">Want to try</span>
+          <span className="text-sm text-muted">{wantCount} {wantCount === 1 ? 'place' : 'places'} on your radar</span>
+        </span>
+        <span aria-hidden className="text-muted">→</span>
+      </Link>
 
       {a.lists.length === 0 ? (
         <div className="pt-12 text-center">

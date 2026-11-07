@@ -60,3 +60,15 @@ create policy places_read on places for select to authenticated using (true);  -
 -- Public share path: the only function granted to anon.
 -- create function get_shared(p_token text) returns jsonb security definer ... checks revoked_at is null and
 -- returns a whitelisted payload (no private_note). Mirrors src/domain/share.ts.
+
+-- Want-to-try (mirrors WantItem): a place on the user's radar; deleted when they log a visit via "I went".
+create table want_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references profiles on delete cascade default auth.uid(),
+  place_id uuid not null references places,
+  note text not null default '',
+  added_at timestamptz not null default now(),
+  unique (user_id, place_id)
+);
+alter table want_items enable row level security;
+create policy want_items_owner on want_items for all using (user_id = auth.uid()) with check (user_id = auth.uid());

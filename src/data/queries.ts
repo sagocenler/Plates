@@ -20,3 +20,8 @@ export function useAllListItems() {
   const { lists } = useRepos()
   return useQuery({ queryKey: ['listItems'], queryFn: () => lists.items() })
 }
+
+export function useWants() {
+  const { wants } = useRepos()
+  return useQuery({ queryKey: ['wants'], queryFn: () => wants.list() })
+}

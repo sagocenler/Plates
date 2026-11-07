@@ -31,7 +31,8 @@ export default function ListDetailPage() {
 
   const items = a.items.filter((i) => i.listId === list.id).sort((x, y) => x.position - y.position)
   const inList = new Set(items.map((i) => i.placeId))
-  const available = (places.data ?? []).filter((p) => !inList.has(p.id)).sort((x, y) => x.name.localeCompare(y.name))
+  const logged = new Set((visits.data ?? []).map((v) => v.placeId))
+  const available = (places.data ?? []).filter((p) => !inList.has(p.id) && logged.has(p.id)).sort((x, y) => x.name.localeCompare(y.name))
 
   return (
     <article className="space-y-6">

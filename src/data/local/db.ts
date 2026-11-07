@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { List, ListItem, Place, Profile, Share, Visit } from '@/domain/types'
+import type { List, ListItem, Place, Profile, Share, Visit, WantItem } from '@/domain/types'
 
 export interface PhotoRow { id: string; blob: Blob }
 export interface DraftRow { key: string; data: unknown; updatedAt: string }
@@ -12,6 +12,7 @@ export class PlatesDB extends Dexie {
   listItems!: EntityTable<ListItem, 'id'>
   shares!: EntityTable<Share, 'token'>
   photos!: EntityTable<PhotoRow, 'id'>
+  wants!: EntityTable<WantItem, 'id'>
   drafts!: EntityTable<DraftRow, 'key'>
   session!: EntityTable<SessionRow, 'key'>
 
@@ -27,5 +28,7 @@ export class PlatesDB extends Dexie {
       drafts: 'key',
       session: 'key',
     })
+    // v2: want-to-try list. Existing stores keep all their data.
+    this.version(2).stores({ wants: 'id, &placeId, addedAt' })
   }
 }

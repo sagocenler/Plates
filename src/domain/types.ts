@@ -116,3 +116,12 @@ export interface Friendship {
   addresseeId: Id
   status: 'pending' | 'accepted'
 }
+
+/** A place the user wants to try. Becomes a visit once they go. */
+export interface WantItem {
+  id: Id
+  userId: Id
+  placeId: Id
+  note: string
+  addedAt: string
+}

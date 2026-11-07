@@ -45,6 +45,12 @@ for (const scheme of ['light', 'dark'] as const) {
     await page.goto('/welcome')
     await audit(page, 'quick add')
 
+    await page.goto('/want')
+    await page.getByLabel('Search restaurants to add').fill('taim')
+    await page.getByRole('button', { name: /Want to try Taim/ }).click()
+    await expect(page.getByRole('heading', { level: 2, name: 'Taim' })).toBeVisible()
+    await audit(page, 'want to try')
+
     await page.getByRole('navigation').getByRole('link', { name: 'Map' }).click()
     await expect(page.locator('.maplibregl-marker').first()).toBeVisible({ timeout: 20_000 })
     await audit(page, 'map')

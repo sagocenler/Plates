@@ -7,6 +7,7 @@ import { useAuth } from '@/features/auth/useAuth'
 import SharePage from '@/features/share/SharePage'
 import ListDetailPage from '@/features/lists/ListDetailPage'
 import ListsPage from '@/features/lists/ListsPage'
+import WantPage from '@/features/want/WantPage'
 import QuickAddPage from '@/features/onboarding/QuickAddPage'
 import MapPage from '@/features/map/MapPage'
 import LibraryPage from '@/features/library/LibraryPage'
@@ -27,6 +28,7 @@ function Gate() {
         <Route path="map" element={<MapPage />} />
         <Route path="log" element={<LogPage />} />
         <Route path="welcome" element={<QuickAddPage />} />
+        <Route path="want" element={<WantPage />} />
         <Route path="lists" element={<ListsPage />} />
         <Route path="lists/:id" element={<ListDetailPage />} />
         <Route path="*" element={<Navigate to="/library" replace />} />
