@@ -1,10 +1,11 @@
 import { buildSharedPayload } from '@/domain/share'
+import { uuid } from '@/lib/uuid'
 import type { Id } from '@/domain/types'
 import type { Repos } from '../interfaces'
 import { MockPlacesProvider } from '../mockPlaces'
 import { PlatesDB } from './db'
 
-export const newId = (): Id => crypto.randomUUID()
+export const newId = (): Id => uuid()
 
 export function createLocalRepos(db: PlatesDB = new PlatesDB()): Repos {
   return {

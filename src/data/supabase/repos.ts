@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js'
+import { uuid } from '@/lib/uuid'
 import type { Profile } from '@/domain/types'
 import type { Repos } from '../interfaces'
 import { MockPlacesProvider } from '../mockPlaces'
@@ -175,7 +176,7 @@ export function createSupabaseRepos(sb: SupabaseClient): Omit<Repos, 'drafts'> {
     photos: {
       async put(blob) {
         const owner = await uid()
-        const id = crypto.randomUUID()
+        const id = uuid()
         const path = `${owner}/${id}.jpg`
         const up = await sb.storage.from(PHOTO_BUCKET).upload(path, blob, { contentType: blob.type || 'image/jpeg' })
         if (up.error) throw new Error(up.error.message)

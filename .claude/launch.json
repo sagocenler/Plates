@@ -18,9 +18,24 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "dev:supabase"
+        "dev:supabase",
+        "--",
+        "--host"
       ],
       "port": 5175
+    },
+    {
+      "name": "plates-local-lan",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--host",
+        "--port",
+        "5176"
+      ],
+      "port": 5176
     }
   ]
 }

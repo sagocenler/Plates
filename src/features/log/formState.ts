@@ -1,4 +1,5 @@
 import type { PlaceSearchResult } from '@/data/interfaces'
+import { uuid } from '@/lib/uuid'
 import type { Dish, Id, ValueRating, Verdict, Visit } from '@/domain/types'
 
 export interface DishDraft {
@@ -43,7 +44,7 @@ export const emptyForm = (now = new Date()): LogForm => ({
   photoIds: [],
 })
 
-export const newDish = (): DishDraft => ({ key: crypto.randomUUID(), name: '', verdict: null, orderAgain: false, photoId: null })
+export const newDish = (): DishDraft => ({ key: uuid(), name: '', verdict: null, orderAgain: false, photoId: null })
 
 /** Only the restaurant and a verdict are required. */
 export const canSave = (f: LogForm): boolean => f.place !== null && f.verdict !== null
@@ -61,7 +62,7 @@ export function formToVisit(f: LogForm, placeId: Id, userId: Id, now = new Date(
     .map((d) => ({ id: d.key, name: d.name.trim(), verdict: d.verdict, orderAgain: d.orderAgain, photoId: d.photoId }))
   const iso = now.toISOString()
   return {
-    id: crypto.randomUUID(),
+    id: uuid(),
     userId,
     placeId,
     visitedOn: f.visitedOn,
